@@ -24,6 +24,8 @@ router.get('/profile',
     
     userController.profileUserController)
 
+router.get('/logout',authMiddleware.authUser,userController.logoutUserController)
+
 
 
 

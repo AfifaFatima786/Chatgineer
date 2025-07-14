@@ -3,6 +3,7 @@ const userService=require("../services/userService")
 const generateToken = require ("../utils/generateToken")
 const userModel=require('../models/userModel')
 const cookieOptions=require("../utils/cookieOptions")
+const redisClient=require('../services/redisService')
 
 const {validationResult}= require('express-validator')
 
@@ -66,6 +67,25 @@ module.exports.profileUserController=async(req,res)=>{
 
         console.log(req.user)
         res.status(201).json({user:req.user});
+    }catch(error){
+        console.log('error')
+        res.status(400).send(error.message)
+    }
+
+}
+
+module.exports.logoutUserController=async(req,res)=>{
+ 
+    try{
+
+        const token=req.cookies.token
+
+        redisClient.set(token,'logout','EX',60*60*24)
+
+
+
+        
+        res.status(200).json({message:"Logged out successfully"});
     }catch(error){
         console.log('error')
         res.status(400).send(error.message)
