@@ -1,34 +1,33 @@
-const express=require('express')
-const morgan=require('morgan')
-const dotenv=require('dotenv')
-dotenv.config()
-const connect=require('./db/db')
-
-
-connect()
-
-
-const userRoutes=require('./routes/userRoutes')
-
-
-
-const app=express();
-
+const express = require('express');
+const morgan = require('morgan');
+const dotenv = require('dotenv');
+const cors = require('cors'); 
 const cookieParser = require('cookie-parser');
+
+dotenv.config();
+
+const connect = require('./db/db');
+connect();
+
+const userRoutes = require('./routes/userRoutes');
+
+const app = express();
+
+
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true, 
+}));
+
 app.use(cookieParser());
-app.use(morgan('dev'))
-
+app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }));
 
+app.use('/users', userRoutes);
 
-app.use('/users',userRoutes)
+app.get('/', (req, res) => {
+    res.send('Hello world');
+});
 
-
-app.get('/',(req,res)=>{
-    res.send('Hellow world');
-})
-
-module.exports=app;
-
-
+module.exports = app;

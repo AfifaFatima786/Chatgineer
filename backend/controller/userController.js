@@ -16,7 +16,7 @@ module.exports.createUserController=async(req,res)=>{
    
 
     const check=await userModel.find({email:req.body.email})
-    if(check)
+    if(check.length>0)
     return res.status(500).json("Invalid Email or Password")
     
 
@@ -26,6 +26,11 @@ module.exports.createUserController=async(req,res)=>{
 
         const token=await generateToken(user);
         res.cookie("token",token,cookieOptions)
+
+        delete user._doc.password;
+
+
+
         res.status(201).json({user,token});
     }catch(error){
         console.log('error')
@@ -52,6 +57,8 @@ module.exports.loginUserController=async(req,res)=>{
         
 
         const token=await generateToken(user);
+
+         delete user._doc.password;
         res.cookie("token",token,cookieOptions)
         res.status(201).json({user,token});
     }catch(error){
