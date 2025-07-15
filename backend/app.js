@@ -6,10 +6,14 @@ const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
+
 const connect = require('./db/db');
 connect();
 
 const userRoutes = require('./routes/userRoutes');
+
+const projectRoutes=require('./routes/projectRoutes')
+
 
 const app = express();
 
@@ -25,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/users', userRoutes);
+app.use('/projects',projectRoutes)
 
 app.get('/', (req, res) => {
     res.send('Hello world');

@@ -53,7 +53,6 @@ module.exports.loginUserController=async(req,res)=>{
 
     try{
         const user=await userService.loginUser(req.body);
-        console.log(user+"controller ka")
         
 
         const token=await generateToken(user);
