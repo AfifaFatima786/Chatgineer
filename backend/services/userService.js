@@ -39,3 +39,11 @@ module.exports.loginUser = async ({ email, password }) => {
 
     return user;
 };
+
+
+module.exports.getAllUsers=async ({userId})=>{
+    const users=await userModel.find({
+        _id:{ $ne : userId}
+    });
+    return users;
+}

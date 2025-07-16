@@ -98,3 +98,19 @@ module.exports.logoutUserController=async(req,res)=>{
     }
 
 }
+
+module.exports.getAllUsersController=async(req,res)=>{
+
+        try{
+            const userId=req.user._id
+            const allUsers=await userService.getAllUsers({userId});
+
+            res.status(200).json({allUsers});
+
+        }
+        catch(error){
+            console.log(error)
+            res.status(400).json({message:error.message});
+
+        }
+}

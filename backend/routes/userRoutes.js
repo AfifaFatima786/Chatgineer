@@ -28,8 +28,11 @@ router.get('/logout',authMiddleware.authUser,userController.logoutUserController
 
 
 
-
-
+    
+router.get('/all',
+    authMiddleware.authUser,
+    
+    userController.getAllUsersController)
 
 
 module.exports=router;

@@ -48,3 +48,50 @@ module.exports.getAllProjectController=async(req,res)=>{
         res.status(400).json({error:err.message})
     }
 }
+
+module.exports.addUserToProjectController=async (req,res)=>{
+
+    const errors=validationResult(req)
+
+    if(!errors.isEmpty){
+        return res.status(400).json({errors:errors.array()})
+    }
+
+    try{
+
+        const {projectId,users}=req.body;
+
+        const project=await projectService.addUsersToProject({
+            projectId,
+            users,
+            userId:req.user._id
+        })
+
+        return res.status(200).json({project})
+
+
+    }catch(err){
+        console.log(err)
+        res.status(400).json({error:err.message})
+    }
+
+
+}
+
+
+module.exports.getProjectByIdController=async (req,res)=>{
+
+    const {projectId}=req.params
+
+    try{
+        const project=await projectService.getProjectByIdController({projectId})
+
+        return res.status(200).json({project})
+    }
+    catch(err){
+        console.log(err)
+        res.status(400).json({error:err.message})
+    }
+
+
+}
