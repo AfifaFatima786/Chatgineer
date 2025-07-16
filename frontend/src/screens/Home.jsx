@@ -1,13 +1,18 @@
-import React,{useContext,useState} from 'react'
+import React,{useContext,useState,useEffect} from 'react'
 import { UserContext } from '../context/userContext'
 import { RiLink } from "react-icons/ri";
 import axios from '../config/axios'
+import { FaUser } from "react-icons/fa";
+
+import {useNavigate} from "react-router-dom"
 
 function Home() {
 
   const {user}=useContext(UserContext)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [projectName,setProjectName]=useState('')
+  const [project,setProject]=useState([])
+  const navigate=useNavigate()
 
   function createProject(e){
     e.preventDefault()
@@ -28,11 +33,26 @@ function Home() {
   }
 
 
+  useEffect(()=>{
+    axios.get('/projects/all',{
+      withCredentials:true
+    }).then((res)=>{
+      console.log(res.data)
+      setProject(res.data.projects)
+
+
+    }).catch((err)=>{
+      console.log(err)
+    })
+
+  },[])
+
+
 
   return (
     <main className='p-4'>
 
-      <div className='projects'>
+      <div className='projects flex flex-wrap gap-3'>
 
         <button
         onClick={()=>setIsModalOpen(true)}
@@ -44,6 +64,37 @@ function Home() {
 
         
         </button>
+
+        {
+                    project.map((project) => (
+                        <div key={project._id}
+
+                            onClick={()=>{
+                              navigate("/project",{
+                                state:{project}
+                              })
+                            }}
+                            
+
+
+                            className="project flex flex-col gap-2 cursor-pointer p-4 border border-slate-300 rounded-md min-w-52 hover:bg-slate-200">
+                            <h2
+                                className='font-semibold'
+                            >{project.name}</h2>
+
+                            <div className="flex items-center  gap-2">
+                              
+                              <p><FaUser /></p>
+
+                                <p className='text-sm'> Collaborators :</p>
+                                {project.users.length}
+
+                                <p><RiLink /></p>
+                            </div>
+
+                        </div>
+                    ))
+                }
         
 
       </div>
@@ -66,6 +117,7 @@ function Home() {
                             <div className="flex justify-end">
                                 <button type="button" className="mr-2 px-4 py-2 bg-gray-300 rounded-md" 
                                 
+                               
                                 >Cancel</button>
                                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">Create</button>
                             </div>

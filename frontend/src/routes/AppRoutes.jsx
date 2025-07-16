@@ -3,6 +3,7 @@ import {Route,BrowserRouter,Routes} from 'react-router-dom'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import Home from '../screens/Home'
+import Project from '../screens/Project'
 
 
 function AppRoutes() {
@@ -15,6 +16,9 @@ function AppRoutes() {
         <Route path="/register" element={<Register/>} />
 
         <Route path="/logout" element={<Register/>} />
+
+        <Route path="/project" element={<Project/>} />
+
 
 
     </Routes>
