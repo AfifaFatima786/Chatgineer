@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FaUser } from "react-icons/fa";
 import { IoMdPersonAdd } from "react-icons/io";
 import axios from '../config/axios';
+import { initialiseSocket,sendMessage,receiveMessage } from '../config/socket';
 
 function Project() {
 
@@ -19,8 +20,6 @@ function Project() {
 
 
     console.log(users)
-    console.log(users._id)
-
     
 
     const handleUserClick=(id)=>{
@@ -56,6 +55,8 @@ function Project() {
 
 
     useEffect(()=>{
+
+        initialiseSocket()
 
         axios.get(`/projects/get-project/${location.state.project._id}`,{
             withCredentials:true

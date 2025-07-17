@@ -1,10 +1,10 @@
-// cookieOptions.js
+const isProduction = process.env.NODE_ENV === 'production';
 
 const cookieOptions = {
-  httpOnly: true, // Prevent access from JS (secure against XSS)
-  secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-  sameSite: 'Lax', // Lax is a good balance for CSRF protection and usability
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+  httpOnly: true, // JS can't access this cookie
+  secure: isProduction, // only true in production (i.e., HTTPS)
+  sameSite: isProduction ? 'None' : 'Lax', // 'None' needed for cross-origin in prod
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 
 module.exports = cookieOptions;
