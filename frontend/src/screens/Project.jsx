@@ -1,4 +1,4 @@
-import React,{useState ,useEffect} from 'react'
+import React,{useState ,useEffect,useContext} from 'react'
 import { useLocation} from 'react-router-dom'
 import { TiGroup } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
@@ -7,6 +7,7 @@ import { FaUser } from "react-icons/fa";
 import { IoMdPersonAdd } from "react-icons/io";
 import axios from '../config/axios';
 import { initialiseSocket,sendMessage,receiveMessage } from '../config/socket';
+import { UserContext } from '../context/userContext';
 
 function Project() {
 
@@ -17,6 +18,8 @@ function Project() {
     const [selectedUserId, setSelectedUserId] = useState([]);
     const [users, setUsers] = useState([])
     const [project, setProject] = useState(location.state.project)
+    const [message,setMessage]=useState('')
+    const {user}=useContext(UserContext)
 
 
     console.log(users)
@@ -53,10 +56,24 @@ function Project() {
         })
     }
 
+    const send=()=>{
+        console.log(user)
+        console.log(user._id)
+
+        sendMessage('project-message',{
+            message,
+            sender:user._id
+        })
+
+        setMessage('')
+
+    }
+
 
     useEffect(()=>{
 
-        initialiseSocket()
+        // console.log(project._id)
+        // initialiseSocket(project._id)
 
         axios.get(`/projects/get-project/${location.state.project._id}`,{
             withCredentials:true
@@ -80,6 +97,17 @@ function Project() {
         })
 
         
+
+    },[])
+
+    useEffect(()=>{
+
+        console.log(project._id)
+        initialiseSocket(project._id)
+
+        receiveMessage('project-message',data=>{
+            console.log(data)
+        })
 
     },[])
 
@@ -134,9 +162,14 @@ function Project() {
 
                     <div className='input-field  bottom-0 w-full absolute flex items-center '>
 
-                        <input className='p-2 px-7 border-none outline-none w-[80%] bg-gray-300' type="text" placeholder='Enter message'/>
+                        <input className='p-2 px-7 border-none outline-none w-[80%] bg-gray-300' type="text"
+                        value={message}
+                        onChange={(e)=>setMessage(e.target.value)}
+                        
+                        placeholder='Enter message'/>
 
-                        <button className='cursor-pointer text-white bg-gray-950  p-2 px-5'><IoIosSend size={27} /></button>
+                        <button onClick={send}
+                         className='cursor-pointer text-white bg-gray-950  p-2 px-5'><IoIosSend size={27} /></button>
 
                     
                 </div>

@@ -11,6 +11,8 @@ const port=process.env.PORT || 3000;
 const jwt=require('jsonwebtoken')
 
 const server=http.createServer(app);
+const mongoose=require('mongoose')
+const projectModel=require('./models/projectModel')
 
 
 io=socketIo(server,{
@@ -21,15 +23,26 @@ io=socketIo(server,{
         }
     })
 
-io.use((socket,next)=>{
+io.use(async (socket,next)=>{
     try{
         console.log("cokkie")
         const rawCookie = socket.request.headers.cookie;
-        console.log(rawCookie)
+       
         
         const parsedCookies = cookie.parse(rawCookie);
         const token = parsedCookies.token;
         console.log(token)
+        const projectId = socket.handshake.query.projectId;
+        console.log("Project ID:", projectId);
+
+        if(!mongoose.Types.ObjectId.isValid(projectId)){
+            return next(new Error('Invalid projectId'))
+        }
+
+        socket.project=await projectModel.findById(projectId)
+
+       
+
 
         if(!token){
             console.log("token ni mila")
@@ -56,6 +69,17 @@ io.use((socket,next)=>{
 
 io.on('connection', socket => {
     console.log('connected server')
+
+    socket.join(socket.project._id)     /* imp-specific room*/
+
+    socket.on('project-message',data=>{
+
+        console.log(data)
+        socket.broadcast.to(socket.project._id).emit('project-message',data)
+    })
+
+
+
 
   socket.on('event', data => { /* … */ });
   socket.on('disconnect', () => { /* … */ });
