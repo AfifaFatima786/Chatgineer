@@ -1,4 +1,4 @@
-import React,{useState ,useEffect,useContext} from 'react'
+import React,{useState ,useEffect,useContext ,useRef} from 'react'
 import { useLocation} from 'react-router-dom'
 import { TiGroup } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
@@ -20,10 +20,8 @@ function Project() {
     const [project, setProject] = useState(location.state.project)
     const [message,setMessage]=useState('')
     const {user}=useContext(UserContext)
+    const messageBox=useRef(null)
 
-
-    console.log(users)
-    
 
     const handleUserClick=(id)=>{
        setSelectedUserId(prevSelectedUserId=>{
@@ -62,9 +60,11 @@ function Project() {
 
         sendMessage('project-message',{
             message,
-            sender:user._id
+            sender:user
         })
 
+
+        appendOutgoingMessage({message,user})
         setMessage('')
 
     }
@@ -99,17 +99,63 @@ function Project() {
         
 
     },[])
+    useEffect(() => {
+    
+    initialiseSocket(project._id);
 
-    useEffect(()=>{
+    const messageListener = (data) => {
+        console.log(data);
+        appendIncomingMessage(data);
+    };
 
-        console.log(project._id)
-        initialiseSocket(project._id)
+    receiveMessage('project-message', messageListener);
 
-        receiveMessage('project-message',data=>{
-            console.log(data)
-        })
+    // // Cleanup: remove the listener when component unmounts or re-renders
+    // return () => {
+    //     const socket = initialiseSocket(); // get existing socket instance
+    //     if (socket) {
+    //         socket.off('project-message', messageListener);
+    //     }
+    // };
+}, []);
 
-    },[])
+
+    function appendIncomingMessage(messageObject){
+
+        
+        
+        const message=document.createElement('div')
+        message.classList.add('message','max-w-56','flex','flex-col')
+
+        message.innerHTML=`
+            <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
+
+            <p class='text-sm'> ${messageObject.message}
+            </p>`
+
+            messageBox.current.appendChild(message)
+        
+    }
+
+
+    function appendOutgoingMessage(messageObject){
+
+        console.log(messageObject)
+
+        
+        
+        const message=document.createElement('div')
+        message.classList.add('ml-auto','max-w-56','flex','flex-col')
+
+        message.innerHTML=`
+            <small class='opacity-65 text-xs'>${messageObject.user.email}</small>
+
+            <p class='text-sm'> ${messageObject.message}
+            </p>`
+
+            messageBox.current.appendChild(message)
+        
+    }
 
     
   return (
@@ -142,7 +188,9 @@ function Project() {
 
             <div className='conversation-area relative flex-grow flex flex-col'>
 
-                <div className='message-box p-2 flex flex-col flex-grow gap-3'>
+                <div
+                ref={messageBox}
+                 className='message-box p-2 flex flex-col flex-grow gap-3'>
 
                     <div className='incoming flex p-2 bg-slate-50 w-fit rounded-md flex-col'>
                         <small className='opacity-65 text-sm'>example@gmail.com</small> <p className='text-sm max-w-56'>Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel.</p>

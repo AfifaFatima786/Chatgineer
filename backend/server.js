@@ -69,13 +69,16 @@ io.use(async (socket,next)=>{
 
 io.on('connection', socket => {
     console.log('connected server')
+    socket.roomId=socket.project._id.toString();
 
-    socket.join(socket.project._id)     /* imp-specific room*/
+    socket.join(socket.roomId)  
+       /* imp-specific room*/
+       console.log(socket.project._id.toString())
 
     socket.on('project-message',data=>{
 
         console.log(data)
-        socket.broadcast.to(socket.project._id).emit('project-message',data)
+        socket.broadcast.to(socket.roomId).emit('project-message',data)
     })
 
 
