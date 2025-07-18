@@ -9,6 +9,7 @@ import { IoMdPersonAdd } from "react-icons/io";
 import axios from '../config/axios';
 import { initialiseSocket,sendMessage,receiveMessage } from '../config/socket';
 import { UserContext } from '../context/userContext';
+import Markdown from 'markdown-to-jsx'
 
 function Project() {
 
@@ -22,6 +23,7 @@ function Project() {
     const [message,setMessage]=useState('')
     const {user}=useContext(UserContext)
     const messageBox=useRef(null)
+    const [messages, setMessages] = useState([])
 
 
     const handleUserClick=(id)=>{
@@ -65,7 +67,13 @@ function Project() {
         })
 
 
-        appendOutgoingMessage({message,user})
+        setMessages(prevMessages=>[...prevMessages,{
+            sender:user,
+            message
+
+        }])
+        scrollToBottom()
+
         setMessage('')
 
     }
@@ -73,9 +81,7 @@ function Project() {
 
     useEffect(()=>{
 
-        // console.log(project._id)
-        // initialiseSocket(project._id)
-
+       
         axios.get(`/projects/get-project/${location.state.project._id}`,{
             withCredentials:true
         }).then(res =>{
@@ -100,77 +106,119 @@ function Project() {
         
 
     },[])
+
+
     useEffect(() => {
     
     initialiseSocket(project._id);
 
-    const messageListener = (data) => {
-        console.log(data);
-        appendIncomingMessage(data);
-    };
+    // const messageListener = (data) => {
+    //     console.log(data);
+    //     setMessages(prevMessages=>[...prevMessages,data])
+    //     scrollToBottom()
+    // };
 
-    receiveMessage('project-message', messageListener);
+    // receiveMessage('project-message', messageListener);
 
-    return () => {
-        window.socket?.off('project-message', messageListener);
-    };
+    // return () => {
+    //     window.socket?.off('project-message', messageListener);
+    // };
 
     
+
+     receiveMessage('project-message', data => {
+
+            console.log(data)
+            
+            if (data.sender._id == 'ai') {
+
+
+                // const message = JSON.parse(data.message)
+
+                console.log(message)
+
+              
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+            } else {
+
+
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+            }
+        })
+
 }, [project._id]);
 
 
-    function appendIncomingMessage(messageObject){
-        if(!project._id) return;
+    // function appendIncomingMessage(messageObject){
+    //     if(!project._id) return;
         
-        console.log(messageObject)
+    //     console.log(messageObject)
+        
+    //     const message=document.createElement('div')
+    //     message.classList.add('message','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
+
+    //     if(messageObject.sender._id==='ai'){
+
+    //         const markDown=(<Markdown>{messageObject.message}</Markdown>)
+
+    //         message.innerHTML=`
+    //         <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
+
+    //         <p class='text-sm break-words'> ${markDown}
+    //         </p>`
+
+
+
+    //     }
+
+    //     else{
+
+    //     message.innerHTML=`
+    //         <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
+
+    //         <p class='text-sm break-words'> ${messageObject.message}
+    //         </p>`}
+
+    //         messageBox.current.appendChild(message)
+    //         scrollToBottom()
+        
+        
+    // }
+
+
+    // function appendOutgoingMessage(messageObject){
+
+    //     console.log(messageObject)
 
         
-
         
+    //     const message=document.createElement('div')
+    //     message.classList.add('ml-auto','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
+
+    //     message.innerHTML=`
+    //         <small class='opacity-65 text-xs'>${messageObject.user.email}</small>
+
+    //         <p class='text-sm break-words'> ${messageObject.message}
+    //         </p>`
+
+    //         messageBox.current.appendChild(message)
+    //         scrollToBottom()
         
-        const message=document.createElement('div')
-        message.classList.add('message','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
-
-        message.innerHTML=`
-            <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
-
-            <p class='text-sm break-words'> ${messageObject.message}
-            </p>`
-
-            messageBox.current.appendChild(message)
-            scrollToBottom()
-        
-    }
-
-
-    function appendOutgoingMessage(messageObject){
-
-        console.log(messageObject)
-
-        
-        
-        const message=document.createElement('div')
-        message.classList.add('ml-auto','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
-
-        message.innerHTML=`
-            <small class='opacity-65 text-xs'>${messageObject.user.email}</small>
-
-            <p class='text-sm break-words'> ${messageObject.message}
-            </p>`
-
-            messageBox.current.appendChild(message)
-            scrollToBottom()
-        
-    }
+    // }
 
 
     function scrollToBottom(){
         messageBox.current.scrollTop=messageBox.current.scrollHeight
     }
 
+    useEffect(() => {
+  scrollToBottom();
+}, [messages]);
+
+
     
   return (
-    <main className='h-screen w-screen flex '>
+    <main className='h-screen w-screen flex  '>
 
         <section className='left flex flex-col  h-full min-w-90 bg-gray-200'>
                          
@@ -196,42 +244,49 @@ function Project() {
 
 
 
+                <div className='conversation-area relative flex-grow flex flex-col overflow-hidden'>
+  <div
+    ref={messageBox}
+    className="message-box flex-grow overflow-y-auto flex flex-col gap-2 px-3 py-2 max-h-full scrollbar-hide"
+  >
+    {messages.map((msg, index) => (
+      <div
+        key={index}
+        className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${
+          msg.sender._id === user._id?.toString() && 'ml-auto'
+        } message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
+      >
+        <small className='opacity-65 text-xs'>{msg.sender.email}</small>
+        <div className='text-sm'>
+          {msg.sender._id === 'ai' ? (
 
-            <div className='conversation-area relative flex-grow flex flex-col'>
+          
+        
+            <Markdown className="break-words whitespace-pre-wrap overflow-auto break-word break-all">{msg.message}</Markdown>
+          ) : (
+            <p className="break-words  whitespace-pre-wrap">{msg.message}</p>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
 
-                <div className='flex gap-2   flex-col flex-grow w-full'>
+  {/* Input Box Fixed at Bottom */}
+  <div className='input-field w-full flex items-center p-2 bg-gray-200'>
+    <input
+      className='p-2 px-4 border-none outline-none w-full bg-gray-300 rounded-md'
+      type="text"
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder='Enter message'
+    />
+    <button onClick={send} className='ml-2 text-white bg-gray-950 p-2 rounded'>
+      <IoIosSend size={24} />
+    </button>
+  </div>
+</div>
 
-                <div
-                ref={messageBox}
-                 className='message-box scrollbar-hide  overflow-auto p-3 flex flex-col flex-grow gap-2'
-                 style={{ maxHeight: 'calc(110vh - 160px)' }}
-                 
-                 >
-
-                    
-
-
-                    </div>
-
-                    </div>
-
-
-
-
-                    <div className='input-field  bottom-0 w-full absolute flex items-center '>
-
-                        <input className='p-2 px-7 border-none outline-none w-[80%] bg-gray-300' type="text"
-                        value={message}
-                        onChange={(e)=>setMessage(e.target.value)}
-                        
-                        placeholder='Enter message'/>
-
-                        <button onClick={send}
-                         className='cursor-pointer text-white bg-gray-950  p-2 px-5'><IoIosSend size={27} /></button>
-
-                    
-                </div>
-            </div>
+           
 
 
             <div className={`sidePanel absolute h-full flex flex-col gap-2 bg-slate-50 min-w-80 transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0`}>
