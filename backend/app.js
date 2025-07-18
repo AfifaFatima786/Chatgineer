@@ -13,6 +13,7 @@ connect();
 const userRoutes = require('./routes/userRoutes');
 
 const projectRoutes=require('./routes/projectRoutes')
+const aiRoutes=require('./routes/aiRoutes')
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/users', userRoutes);
 app.use('/projects',projectRoutes)
+app.use('/ai',aiRoutes)
 
 app.get('/', (req, res) => {
     res.send('Hello world');
