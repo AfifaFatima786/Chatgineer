@@ -121,6 +121,10 @@ function Project() {
 
     function appendIncomingMessage(messageObject){
         if(!project._id) return;
+        
+        console.log(messageObject)
+
+        
 
         
         

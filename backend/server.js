@@ -13,6 +13,7 @@ const jwt=require('jsonwebtoken')
 const server=http.createServer(app);
 const mongoose=require('mongoose')
 const projectModel=require('./models/projectModel')
+const aiServices =require('./services/aiServices')
 
 
 io=socketIo(server,{
@@ -75,10 +76,33 @@ io.on('connection', socket => {
        /* imp-specific room*/
        console.log(socket.project._id.toString())
 
-    socket.on('project-message',data=>{
+    socket.on('project-message',async data=>{
 
-        console.log(data)
+        const message=data.message
+
+
+         console.log(data)
         socket.broadcast.to(socket.roomId).emit('project-message',data)
+
+        const aiIsPresentInMessage=message.includes('@ai')
+
+        if(aiIsPresentInMessage){
+
+            const prompt=message.replace('@ai','')
+           
+            const result=await aiServices.generateResult(prompt)
+            
+            io.to(socket.roomId).emit('project-message',{
+                message:result,
+                sender:{
+                    _id:'ai',
+                    email:'AI'
+                }
+
+            })
+        }
+
+       
     })
 
 
