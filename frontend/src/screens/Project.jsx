@@ -1,4 +1,5 @@
 import React,{useState ,useEffect,useContext ,useRef} from 'react'
+
 import { useLocation} from 'react-router-dom'
 import { TiGroup } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
@@ -110,30 +111,30 @@ function Project() {
 
     receiveMessage('project-message', messageListener);
 
-    // // Cleanup: remove the listener when component unmounts or re-renders
-    // return () => {
-    //     const socket = initialiseSocket(); // get existing socket instance
-    //     if (socket) {
-    //         socket.off('project-message', messageListener);
-    //     }
-    // };
-}, []);
+    return () => {
+        window.socket?.off('project-message', messageListener);
+    };
+
+    
+}, [project._id]);
 
 
     function appendIncomingMessage(messageObject){
+        if(!project._id) return;
 
         
         
         const message=document.createElement('div')
-        message.classList.add('message','max-w-56','flex','flex-col')
+        message.classList.add('message','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
 
         message.innerHTML=`
             <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
 
-            <p class='text-sm'> ${messageObject.message}
+            <p class='text-sm break-words'> ${messageObject.message}
             </p>`
 
             messageBox.current.appendChild(message)
+            scrollToBottom()
         
     }
 
@@ -145,16 +146,22 @@ function Project() {
         
         
         const message=document.createElement('div')
-        message.classList.add('ml-auto','max-w-56','flex','flex-col')
+        message.classList.add('ml-auto','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
 
         message.innerHTML=`
             <small class='opacity-65 text-xs'>${messageObject.user.email}</small>
 
-            <p class='text-sm'> ${messageObject.message}
+            <p class='text-sm break-words'> ${messageObject.message}
             </p>`
 
             messageBox.current.appendChild(message)
+            scrollToBottom()
         
+    }
+
+
+    function scrollToBottom(){
+        messageBox.current.scrollTop=messageBox.current.scrollHeight
     }
 
     
@@ -163,7 +170,7 @@ function Project() {
 
         <section className='left flex flex-col  h-full min-w-90 bg-gray-200'>
                          
-            <header className='flex items-center  justify-between p-2 px-4 w-full bg-slate-400'>
+            <header className='flex items-center   justify-between p-2 px-4 w-full bg-slate-400'>
                 
 
                 <button 
@@ -188,20 +195,19 @@ function Project() {
 
             <div className='conversation-area relative flex-grow flex flex-col'>
 
+                <div className='flex gap-2   flex-col flex-grow w-full'>
+
                 <div
                 ref={messageBox}
-                 className='message-box p-2 flex flex-col flex-grow gap-3'>
+                 className='message-box scrollbar-hide  overflow-auto p-3 flex flex-col flex-grow gap-2'
+                 style={{ maxHeight: 'calc(110vh - 160px)' }}
+                 
+                 >
 
-                    <div className='incoming flex p-2 bg-slate-50 w-fit rounded-md flex-col'>
-                        <small className='opacity-65 text-sm'>example@gmail.com</small> <p className='text-sm max-w-56'>Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel.</p>
-                     </div>
-
-                     <div className='ml-auto flex p-2 bg-slate-50 w-fit rounded-md flex-col'>
-                        <small className='opacity-65 text-sm'>example@gmail.com</small> <p className='text-sm max-w-56 '>Lorem ipsum dolor sit amet.</p>
-                     </div>
+                    
 
 
-
+                    </div>
 
                     </div>
 
