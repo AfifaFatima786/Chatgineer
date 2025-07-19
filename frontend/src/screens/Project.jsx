@@ -76,7 +76,13 @@ function Project() {
             console.log(res.data)
             setIsModalOpen(false)
         }).catch(err=>{
-            console.log(err)
+            if (err.response) {
+                console.log(err.response.data);
+            } else if (err.request) {
+                console.log('Server is not running. Please start the backend server.');
+            } else {
+                console.log('Error:', err.message);
+            }
         })
     }
 
@@ -142,7 +148,13 @@ function Project() {
             setUsers(res.data.allUsers)
             console.log(res.data.allUsers)
         }).catch(err=>{
-            console.log(err)
+            if (err.response) {
+                console.log(err.response.data);
+            } else if (err.request) {
+                console.log('Server is not running. Please start the backend server.');
+            } else {
+                console.log('Error:', err.message);
+            }
         })
 
         
@@ -159,11 +171,11 @@ function Project() {
         
         if (data.sender._id == 'ai') {
             console.log(data.message)
-            setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+            setMessages(prevMessages => [ ...prevMessages, data ]) 
         } else {
-            // Check if this message is already in the state (to avoid duplicates from own messages)
+            
             setMessages(prevMessages => {
-                // If the message has an ID and it already exists, don't add it again
+                
                 if (data.id && prevMessages.some(msg => msg.id === data.id)) {
                     return prevMessages;
                 }
@@ -175,12 +187,12 @@ function Project() {
     const cleanup = receiveMessage('project-message', messageListener);
 
     return () => {
-        cleanup(); // Clean up the event listener when component unmounts or project._id changes
+        cleanup(); 
     };
 
 }, [project._id]);
 
-// Cleanup socket when component unmounts
+
 useEffect(() => {
     return () => {
         disconnectSocket();
@@ -188,62 +200,6 @@ useEffect(() => {
 }, []);
 
 
-    // function appendIncomingMessage(messageObject){
-    //     if(!project._id) return;
-        
-    //     console.log(messageObject)
-        
-    //     const message=document.createElement('div')
-    //     message.classList.add('message','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
-
-    //     if(messageObject.sender._id==='ai'){
-
-    //         const markDown=(<Markdown>{messageObject.message}</Markdown>)
-
-    //         message.innerHTML=`
-    //         <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
-
-    //         <p class='text-sm break-words'> ${markDown}
-    //         </p>`
-
-
-
-    //     }
-
-    //     else{
-
-    //     message.innerHTML=`
-    //         <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
-
-    //         <p class='text-sm break-words'> ${messageObject.message}
-    //         </p>`}
-
-    //         messageBox.current.appendChild(message)
-    //         scrollToBottom()
-        
-        
-    // }
-
-
-    // function appendOutgoingMessage(messageObject){
-
-    //     console.log(messageObject)
-
-        
-        
-    //     const message=document.createElement('div')
-    //     message.classList.add('ml-auto','max-w-56','flex','flex-col','bg-gray-100','p-2','rounded')
-
-    //     message.innerHTML=`
-    //         <small class='opacity-65 text-xs'>${messageObject.user.email}</small>
-
-    //         <p class='text-sm break-words'> ${messageObject.message}
-    //         </p>`
-
-    //         messageBox.current.appendChild(message)
-    //         scrollToBottom()
-        
-    // }
 
 
     function scrollToBottom(){

@@ -28,8 +28,17 @@ const Register = () => {
         navigate('/');
         })
     .catch((err) => {
-    console.log(err.response.data);
-        });
+        if (err.response) {
+            // Server responded with error status
+            console.log(err.response.data);
+        } else if (err.request) {
+            // Request was made but no response received (server not running)
+            console.log('Server is not running. Please start the backend server.');
+        } else {
+            // Something else happened
+            console.log('Error:', err.message);
+        }
+    });
 
 
     }
