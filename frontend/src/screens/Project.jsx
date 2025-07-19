@@ -7,11 +7,17 @@ import { RxCross2 } from "react-icons/rx";
 import { FaUser } from "react-icons/fa";
 import { IoMdPersonAdd } from "react-icons/io";
 import axios from '../config/axios';
-import { initialiseSocket,sendMessage,receiveMessage } from '../config/socket';
+import { initialiseSocket,sendMessage,receiveMessage, disconnectSocket } from '../config/socket';
 import { UserContext } from '../context/userContext';
 import Markdown from 'markdown-to-jsx'
+import hljs from 'highlight.js';
+import 'highlight.js/styles/nord.css'; // or another theme
+
 
 function Project() {
+
+    if (!window.hljs) window.hljs = hljs;
+
 
     const location=useLocation()
 
@@ -24,6 +30,23 @@ function Project() {
     const {user}=useContext(UserContext)
     const messageBox=useRef(null)
     const [messages, setMessages] = useState([])
+
+    function SyntaxHighlightedCode(props){
+
+        const ref=useRef(null)
+
+        React.useEffect(()=>{
+            if(ref.current && props.className?.includes('lang-') && window.hljs){
+                window.hljs.highlightElement(ref.current)
+
+                ref.current.removeAttribute('data-highlighted')
+            }
+        },[props.className,props.children])
+
+        return <code {...props} ref={ref} />
+    }
+
+    
 
 
     const handleUserClick=(id)=>{
@@ -61,21 +84,40 @@ function Project() {
         console.log(user)
         console.log(user._id)
 
-        sendMessage('project-message',{
+        const messageData = {
             message,
-            sender:user
-        })
+            sender: user,
+            timestamp: Date.now(), // Add timestamp for unique identification
+            id: Math.random().toString(36).substr(2, 9) // Add unique ID
+        }
 
+        sendMessage('project-message', messageData)
 
-        setMessages(prevMessages=>[...prevMessages,{
-            sender:user,
-            message
-
-        }])
-        scrollToBottom()
-
+        // Add message to local state immediately for instant feedback
+        setMessages(prevMessages => [...prevMessages, messageData])
+        
+        // Clear the input field immediately for better UX
         setMessage('')
 
+    }
+
+    function WriteAiMessage({messageObject}) {
+
+        // const messageObject = JSON.parse(message)
+
+        return (
+            <div
+                className='overflow-auto bg-slate-950 text-white rounded-sm p-2'
+            >
+                <Markdown
+                    children={messageObject}
+                    options={{
+                        overrides: {
+                            code: SyntaxHighlightedCode,
+                        },
+                    }}
+                />
+            </div>)
     }
 
 
@@ -112,41 +154,38 @@ function Project() {
     
     initialiseSocket(project._id);
 
-    // const messageListener = (data) => {
-    //     console.log(data);
-    //     setMessages(prevMessages=>[...prevMessages,data])
-    //     scrollToBottom()
-    // };
+    const messageListener = (data) => {
+        console.log(data)
+        
+        if (data.sender._id == 'ai') {
+            console.log(data.message)
+            setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+        } else {
+            // Check if this message is already in the state (to avoid duplicates from own messages)
+            setMessages(prevMessages => {
+                // If the message has an ID and it already exists, don't add it again
+                if (data.id && prevMessages.some(msg => msg.id === data.id)) {
+                    return prevMessages;
+                }
+                return [...prevMessages, data];
+            });
+        }
+    };
 
-    // receiveMessage('project-message', messageListener);
+    const cleanup = receiveMessage('project-message', messageListener);
 
-    // return () => {
-    //     window.socket?.off('project-message', messageListener);
-    // };
-
-    
-
-     receiveMessage('project-message', data => {
-
-            console.log(data)
-            
-            if (data.sender._id == 'ai') {
-
-
-                // const message = JSON.parse(data.message)
-
-                console.log(message)
-
-              
-                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
-            } else {
-
-
-                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
-            }
-        })
+    return () => {
+        cleanup(); // Clean up the event listener when component unmounts or project._id changes
+    };
 
 }, [project._id]);
+
+// Cleanup socket when component unmounts
+useEffect(() => {
+    return () => {
+        disconnectSocket();
+    };
+}, []);
 
 
     // function appendIncomingMessage(messageObject){
@@ -247,12 +286,12 @@ function Project() {
                 <div className='conversation-area relative flex-grow flex flex-col overflow-hidden'>
   <div
     ref={messageBox}
-    className="message-box flex-grow overflow-y-auto flex flex-col gap-2 px-3 py-2 max-h-full scrollbar-hide"
+    className="message-box flex-grow overflow-y-auto flex flex-col gap-2 px-3 py-2 max-h-full scrollbar-hide "
   >
     {messages.map((msg, index) => (
       <div
         key={index}
-        className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${
+        className={`${msg.sender._id === 'ai' ? 'max-w-70' : 'max-w-52'} ${
           msg.sender._id === user._id?.toString() && 'ml-auto'
         } message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
       >
@@ -262,7 +301,9 @@ function Project() {
 
           
         
-            <Markdown className="break-words whitespace-pre-wrap overflow-auto break-word break-all">{msg.message}</Markdown>
+            // <Markdown className="break-words whitespace-pre-wrap overflow-auto break-word break-all bg-slate-950 text-white p-2 border-2 rounded-lg">{msg.message}</Markdown>
+
+            <WriteAiMessage messageObject={msg.message} />
           ) : (
             <p className="break-words  whitespace-pre-wrap">{msg.message}</p>
           )}
