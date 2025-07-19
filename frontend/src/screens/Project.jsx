@@ -11,6 +11,7 @@ import { initialiseSocket,sendMessage,receiveMessage, disconnectSocket } from '.
 import { UserContext } from '../context/userContext';
 import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
+
 import 'highlight.js/styles/nord.css'; // or another theme
 
 
@@ -30,6 +31,18 @@ function Project() {
     const {user}=useContext(UserContext)
     const messageBox=useRef(null)
     const [messages, setMessages] = useState([])
+    const [fileTree,setFileTree]=useState({
+        "app.js":{
+            content:`const express=require('express');`
+        }
+        
+    })
+    const [currentFile, setCurrentFile] = useState(null)
+    
+
+
+
+
 
     function SyntaxHighlightedCode(props){
 
@@ -107,23 +120,52 @@ function Project() {
 
     }
 
+    // Function to extract code blocks from the most recent AI message only
+    function getAllCodeBlocks() {
+        const allCodeBlocks = [];
+        
+        // Find the most recent AI message
+        const aiMessages = messages.filter(msg => msg.sender._id === 'ai');
+        const latestAiMessage = aiMessages[aiMessages.length - 1];
+        
+        if (latestAiMessage) {
+            const parts = latestAiMessage.message.split(/(```[\s\S]*?```)/);
+            
+            parts.forEach((part) => {
+                if (part.startsWith('```') && part.endsWith('```')) {
+                    const codeContent = part.slice(3, -3); // Remove ``` markers
+                    const lines = codeContent.split('\n');
+                    const language = lines[0].trim();
+                    const actualCode = lines.slice(1).join('\n');
+                    
+                    allCodeBlocks.push({
+                        language: language || 'javascript',
+                        code: actualCode,
+                        sender: latestAiMessage.sender.email,
+                        timestamp: latestAiMessage.timestamp || Date.now()
+                    });
+                }
+            });
+        }
+        
+        return allCodeBlocks;
+    }
+
     function WriteAiMessage({messageObject}) {
-
-        // const messageObject = JSON.parse(message)
-
         return (
-            <div
-                className='overflow-auto bg-slate-950 text-white rounded-sm p-2'
-            >
+            <div className="bg-slate-50 text-black rounded-sm p-2">
                 <Markdown
                     children={messageObject}
                     options={{
                         overrides: {
-                            code: SyntaxHighlightedCode,
+                            // Don't render code blocks in chat since they're shown on the right
+                            code: () => null,
+                            pre: () => null,
                         },
                     }}
                 />
-            </div>)
+            </div>
+        )
     }
 
 
@@ -210,12 +252,22 @@ useEffect(() => {
   scrollToBottom();
 }, [messages]);
 
+    // Apply syntax highlighting to code blocks in right section
+    useEffect(() => {
+        if (window.hljs) {
+            document.querySelectorAll('.right pre code').forEach((block) => {
+                window.hljs.highlightElement(block);
+            });
+        }
+    }, [messages]);
+
 
     
-  return (
-    <main className='h-screen w-screen flex  '>
+      return (
+    <main className='h-screen w-screen flex'>
 
-        <section className='left flex flex-col  h-full min-w-90 bg-gray-200'>
+        {/* Left Section - Chat Messages */}
+        <section className='left flex flex-col h-full w-3/5 bg-gray-200'>
                          
             <header className='flex items-center   justify-between p-2 px-4 w-full bg-slate-400'>
                 
@@ -281,9 +333,8 @@ useEffect(() => {
       <IoIosSend size={24} />
     </button>
   </div>
-</div>
+            </div>
 
-           
 
 
             <div className={`sidePanel absolute h-full flex flex-col gap-2 bg-slate-50 min-w-80 transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0`}>
@@ -329,6 +380,25 @@ useEffect(() => {
 
 
 
+        </section>
+
+        <section className='right bg-silver-50 w-3/5 h-full flex flex-col'>
+            <div className='flex-grow overflow-y-auto p-3'>
+                {getAllCodeBlocks().map((block, index) => (
+                    <div key={index} className='mb-4 last:mb-0'>
+                        <div className='text-xs text-silver-600 mb-2'>
+                            {block.language}
+                        </div>
+                        <div className='bg-white rounded-sm p-3 border border-silver-600'>
+                            <pre className={`language-${block.language}`}>
+                                <code className={`language-${block.language}`}>
+                                    {block.code}
+                                </code>
+                            </pre>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </section>
 
         {isModalOpen && (
