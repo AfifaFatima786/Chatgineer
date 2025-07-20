@@ -161,7 +161,7 @@ function Project() {
 
     function WriteAiMessage({messageObject}) {
         return (
-            <div className="bg-slate-50 text-black rounded-sm p-2">
+            <div className="bg-gray-300  text-black rounded-sm p-2">
                 <Markdown
                     children={messageObject}
                     options={{
@@ -275,12 +275,12 @@ function Project() {
 
     
       return (
-    <main className='h-screen overflow-hidden w-screen flex'>
+    <main className='h-screen overflow-hidden w-screen bg-gray-800 flex'>
 
         {/* Left Section - Chat Messages */}
         <section className='left flex flex-col h-full w-3/5 bg-gray-200'>
                          
-            <header className='flex items-center   justify-between p-2 px-4 w-full bg-slate-400'>
+            <header className='flex items-center   justify-between p-2 px-4 w-full bg-gray-400'>
                 
 
                 <button 
@@ -302,7 +302,7 @@ function Project() {
 
 
 
-                <div className='conversation-area relative flex-grow flex flex-col overflow-hidden'>
+                <div className=' bg-gray-800 conversation-area relative flex-grow flex flex-col overflow-hidden'>
   <div
     ref={messageBox}
     className="message-box flex-grow overflow-y-auto flex flex-col gap-2 px-3 py-2 max-h-full scrollbar-hide "
@@ -312,16 +312,13 @@ function Project() {
         key={index}
         className={`${msg.sender._id === 'ai' ? 'max-w-70' : 'max-w-52'} ${
           msg.sender._id === user._id?.toString() && 'ml-auto'
-        } message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
+        } message bg-gray-300 flex flex-col p-2  w-fit rounded-md`}
       >
-        <small className='opacity-65 text-xs'>{msg.sender.email}</small>
+        <small className=' opacity-65 text-xs'>{msg.sender.email}</small>
         <div className='text-sm'>
           {msg.sender._id === 'ai' ? (
 
-          
         
-            // <Markdown className="break-words whitespace-pre-wrap overflow-auto break-word break-all bg-slate-950 text-white p-2 border-2 rounded-lg">{msg.message}</Markdown>
-
             <WriteAiMessage messageObject={msg.message} />
           ) : (
             <p className="break-words  whitespace-pre-wrap">{msg.message}</p>
@@ -332,7 +329,7 @@ function Project() {
   </div>
 
   {/* Input Box Fixed at Bottom */}
-  <div className='input-field w-full flex items-center p-2 bg-gray-200'>
+  <div className='input-field w-full bg-gray-400 flex items-center p-2 '>
     <input
       className='p-2 px-4 border-none outline-none w-full bg-gray-300 rounded-md'
       type="text"
@@ -348,13 +345,13 @@ function Project() {
 
 
 
-            <div className={`sidePanel absolute h-full flex flex-col gap-2 bg-slate-50 min-w-80 transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0`}>
+            <div className={`sidePanel bg-gray-800 text-gray-300 absolute h-full flex flex-col gap-2  min-w-80 transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0`}>
 
-                <header className='flex justify-between items-center p-3 bg-gray-300 px-3'>
+                <header className='flex justify-between items-center p-3 bg-gray-400 px-3'>
 
-                    <h1 className='font-semibold text-lg'>Collaborators</h1>
+                    <h1 className='font-semibold  text-black text-lg'>Collaborators</h1>
 
-                    <button onClick={()=>setIsSidePanelOpen(false)}>
+                    <button className='text-black cursor-pointer' onClick={()=>setIsSidePanelOpen(false)}>
                         <RxCross2 size={15}/>
                     </button>
                 </header>
@@ -372,7 +369,7 @@ function Project() {
                             return (
                                 <div
                                 key={user._id || user}
-                                 className="user cursor-pointer hover:bg-slate-200 p-2 flex gap-2 items-center">
+                                 className="user cursor-pointer  hover:text-black hover:bg-slate-400 p-2 flex gap-2 items-center">
                                     <div className='aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
                                        <FaUser />
                                     </div>
@@ -411,7 +408,7 @@ function Project() {
    className="ml-auto cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
 
 >
-  Open Compiler
+  Code Editor
 </button>
 </div>
 
@@ -488,7 +485,7 @@ function Project() {
     {getAllCodeBlocks().map((block, index) => (
       <div key={index} className='mb-4 last:mb-0'>
         <div className='text-xs text-silver-600 mb-2'>{block.language}</div>
-        <div className='bg-white rounded-sm p-3 border border-silver-600'>
+        <div className='bg-gray-400 rounded-sm p-3 border border-silver-600'>
           <pre className={`language-${block.language}`}>
             <code className={`language-${block.language}`}>{block.code}</code>
           </pre>
@@ -508,7 +505,7 @@ function Project() {
 
         {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
+                    <div className="p-4 bg-gray-300 rounded-md w-96 max-w-full relative">
                         <header className='flex justify-between items-center mb-4'>
                             <h2 className='text-xl font-semibold'>Select User</h2>
                             <button onClick={() => setIsModalOpen(false)} className='p-2 cursor-pointer'>
@@ -517,7 +514,7 @@ function Project() {
                                 
                             </button>
                         </header>
-                        <div className="users-list flex flex-col gap-2 mb-16 max-h-96 overflow-auto">
+                        <div className="users-list  flex flex-col gap-2 mb-16 max-h-96 overflow-auto">
                             {users.map(user => (
                                 <div key={user._id} className={`user cursor-pointer hover:bg-slate-200
                                     ${Array.from(selectedUserId).indexOf(user._id) != -1 ? 'bg-slate-200' : ""}
@@ -531,7 +528,7 @@ function Project() {
                         </div>
                         <button
                             onClick={addCollaborators}
-                            className='absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-600 text-white rounded-md'>
+                            className='absolute bottom-4 left-1/2 transform  cursor-pointer -translate-x-1/2 px-4 py-2 bg-gray-700 text-white rounded-md hover:scale-105 transition-all duration-500'>
                             Add Collaborators
                         </button>
                     </div>

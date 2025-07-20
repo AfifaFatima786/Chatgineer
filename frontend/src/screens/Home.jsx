@@ -51,7 +51,7 @@ function Home() {
 
 
   return (
-    <main className='p-4 flex flex-col gap-4'>
+    <main className='p-4 flex flex-col gap-4 bg-gray-900 h-screen'>
       <div className='flex justify-end'>
       <Link to='/logout'
       className=" cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
@@ -65,9 +65,9 @@ function Home() {
         <button
         onClick={()=>setIsModalOpen(true)}
 
-        className='project flex items-center justify-center gap-2 p-4 border border-slate-300 rounded-md'
+        className='project flex items-center bg-gray-700 justify-center gap-2 p-4 border border-blue-200 rounded-md hover:scale-105 transition-all duration-500 text-gray-300'
         >
-          New Project
+          New Project   
           <RiLink />
 
         
@@ -85,7 +85,7 @@ function Home() {
                             
 
 
-                            className="project flex flex-col gap-2 cursor-pointer p-4 border border-slate-300 rounded-md min-w-52 hover:bg-slate-200">
+                            className="project flex flex-col gap-2 cursor-pointer p-4 border-2 border-gray-500 rounded-md min-w-52 bg-gray-700 text-gray-300 hover:bg-slate-200 hover:scale-105 transition-all duration-500 hover:text-black">
                             <h2
                                 className='font-semibold'
                             >{project.name}</h2>

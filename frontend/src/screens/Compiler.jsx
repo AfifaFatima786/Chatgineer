@@ -45,7 +45,7 @@ function Compiler(props) {
 
 
   
-    <div className="fixed inset-0 bg-white z-50 p-4 overflow-auto">
+    <div className="fixed text-gray-200 inset-0 bg-gray-800 z-50 p-4 overflow-auto">
       <button
        
        onClick={()=>{
@@ -55,7 +55,7 @@ function Compiler(props) {
         className="absolute top-4 right-4 text-2xl cursor-pointer">×</button>
 
       <div className='w-full max-w-5xl mx-auto p-4'>
-        <h2 className="text-2xl font-extrabold text-gray-800 mb-6 tracking-wide border-b pb-2 border-gray-300">
+        <h2 className="text-2xl font-extrabold text-gray-200 mb-6 tracking-wide border-b pb-2 border-gray-300">
   Chatgineer — Mini Compiler
 </h2>
 
@@ -80,17 +80,17 @@ function Compiler(props) {
         />
 
         <textarea
-          className="w-full p-2 border rounded-md resize-none mb-4"
+          className="w-full p-2  text-gray-100 border rounded-md resize-none mb-4"
           rows={3}
           value={stdin}
           onChange={(e) => setStdin(e.target.value)}
-          placeholder="Enter input (stdin) here..."
+          placeholder="Enter input here..."
         />
         
 
         <button
          // onClick={runCode(stdin)}
-          className='p-2 bg-black text-white rounded-md hover:bg-gray-800'
+          className='p-2 bg-black hover:scale-105 transition-all duration-500 cursor-pointer hover:bg-gray-200 text-white rounded-md hover:text-black'
           disabled={loading}
         >
           {loading ? "Running..." : "Run Code"}
@@ -98,7 +98,7 @@ function Compiler(props) {
 
         <div className='mt-4'>
           <h3 className='text-md font-semibold mb-1'>Output:</h3>
-          <pre className='bg-gray-100 p-3 rounded-md text-sm whitespace-pre-wrap'>
+          <pre className='bg-gray-700 p-3 rounded-md text-sm whitespace-pre-wrap'>
             {output}
           </pre>
         </div>
