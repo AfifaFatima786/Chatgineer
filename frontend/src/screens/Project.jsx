@@ -14,6 +14,8 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/nord.css'; 
 import Compiler from './Compiler';
 
+import { Link } from 'react-router-dom';
+
 
 
 function Project() {
@@ -22,6 +24,7 @@ function Project() {
 
 
     const location=useLocation()
+    
 
     const [isSidePanelOpen,setIsSidePanelOpen]=useState(false)
     const [isModalOpen,setIsModalOpen]=useState(false)
@@ -394,13 +397,13 @@ function Project() {
 
         <div className='flex justify-between w-full'>
 
-            <button
-  onClick={() => setShowCompiler(true)}
+            <Link
+  to='/'
    className=" cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
 
 >
   Home
-</button>
+</Link>
 
 
         <button
