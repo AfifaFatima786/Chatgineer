@@ -3,7 +3,7 @@ import { UserContext } from '../context/userContext'
 import { RiLink } from "react-icons/ri";
 import axios from '../config/axios'
 import { FaUser } from "react-icons/fa";
-
+import { Link } from 'react-router-dom';
 
 import {useNavigate} from "react-router-dom"
 
@@ -51,7 +51,14 @@ function Home() {
 
 
   return (
-    <main className='p-4'>
+    <main className='p-4 flex flex-col gap-4'>
+      <div className='flex justify-end'>
+      <Link to='/logout'
+      className=" cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
+
+      >Logout
+      </Link>
+      </div>
 
       <div className='projects flex flex-wrap gap-3'>
 
@@ -104,7 +111,7 @@ function Home() {
        {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-                        <h2 className="text-xl mb-4">Create New Project</h2>
+                        <h2 className=" text-xl mb-4">Create New Project</h2>
                         <form onSubmit={createProject}>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700">Project Name</label>
@@ -116,11 +123,12 @@ function Home() {
                                     type="text" className="mt-1 block w-full p-2 border border-gray-300 rounded-md" required />
                             </div>
                             <div className="flex justify-end">
-                                <button type="button" className="mr-2 px-4 py-2 bg-gray-300 rounded-md" 
+                                <button type="button" className=" cursor-pointer mr-2 px-4 py-2 bg-gray-300 rounded-md" 
                                 
+                                onClick={()=>setIsModalOpen(false)}
                                
                                 >Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">Create</button>
+                                <button type="submit" className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md">Create</button>
                             </div>
                         </form>
                     </div>

@@ -5,6 +5,7 @@ import Register from '../screens/Register'
 import Home from '../screens/Home'
 import Project from '../screens/Project'
 import UserAuth from '../auth/UserAuth'
+import Logout from '../screens/Logout'
 
 
 function AppRoutes() {
@@ -16,7 +17,7 @@ function AppRoutes() {
 
         <Route path="/register" element={<Register/>} />
 
-        <Route path="/logout" element={<Register/>} />
+        <Route path="/logout" element={<Logout/>} />
 
         <Route path="/project" element={<UserAuth>  <Project/> </UserAuth>} />
 
