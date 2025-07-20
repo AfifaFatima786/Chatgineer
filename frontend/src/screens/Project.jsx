@@ -11,8 +11,9 @@ import { initialiseSocket,sendMessage,receiveMessage, disconnectSocket } from '.
 import { UserContext } from '../context/userContext';
 import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
+import 'highlight.js/styles/nord.css'; 
+import Compiler from './Compiler';
 
-import 'highlight.js/styles/nord.css'; // or another theme
 
 
 function Project() {
@@ -31,35 +32,39 @@ function Project() {
     const {user}=useContext(UserContext)
     const messageBox=useRef(null)
     const [messages, setMessages] = useState([])
-    const [fileTree,setFileTree]=useState({
-        "app.js":{
-            content:`const express=require('express');`
-        }
+//     const [stdin, setStdin] = useState("");
+    const [showCompiler, setShowCompiler] = useState(false);
+//   const [code, setCode] = useState("print('Hello')");
+//   const [language, setLanguage] = useState("python3");
+//   const [output, setOutput] = useState("");
+//   const [loading, setLoading] = useState(false);
+
+//   const versionIndexMap = {
+//     python3: "4",
+//     java: "4",
+//     cpp17: "0",
+//     c: "5"
+//   };
+
+//   const runCode = async (currentStdin) => {
+//     setLoading(true);
+//     try {
+//       const res = await axios.post('http://localhost:3000/execute', {
+//         script: code,
+//         language: language,
+//         versionIndex: versionIndexMap[language],
+//         stdin: currentStdin,
         
-    })
-    const [currentFile, setCurrentFile] = useState(null)
-    
+//       });
+//       setOutput(res.data.output);
+//     } catch (err) {
+//       setOutput("Error executing code.");
+//       console.error(err);
+//     }
+//     setLoading(false);
+//   };
 
 
-
-
-
-    function SyntaxHighlightedCode(props){
-
-        const ref=useRef(null)
-
-        React.useEffect(()=>{
-            if(ref.current && props.className?.includes('lang-') && window.hljs){
-                window.hljs.highlightElement(ref.current)
-
-                ref.current.removeAttribute('data-highlighted')
-            }
-        },[props.className,props.children])
-
-        return <code {...props} ref={ref} />
-    }
-
-    
 
 
     const handleUserClick=(id)=>{
@@ -120,11 +125,11 @@ function Project() {
 
     }
 
-    // Function to extract code blocks from the most recent AI message only
+    
     function getAllCodeBlocks() {
         const allCodeBlocks = [];
         
-        // Find the most recent AI message
+        
         const aiMessages = messages.filter(msg => msg.sender._id === 'ai');
         const latestAiMessage = aiMessages[aiMessages.length - 1];
         
@@ -133,7 +138,7 @@ function Project() {
             
             parts.forEach((part) => {
                 if (part.startsWith('```') && part.endsWith('```')) {
-                    const codeContent = part.slice(3, -3); // Remove ``` markers
+                    const codeContent = part.slice(3, -3);
                     const lines = codeContent.split('\n');
                     const language = lines[0].trim();
                     const actualCode = lines.slice(1).join('\n');
@@ -158,7 +163,7 @@ function Project() {
                     children={messageObject}
                     options={{
                         overrides: {
-                            // Don't render code blocks in chat since they're shown on the right
+                            
                             code: () => null,
                             pre: () => null,
                         },
@@ -203,6 +208,9 @@ function Project() {
 
     },[])
 
+    
+    
+
 
     useEffect(() => {
     
@@ -210,7 +218,7 @@ function Project() {
 
     const messageListener = (data) => {
         console.log(data)
-        
+
         if (data.sender._id == 'ai') {
             console.log(data.message)
             setMessages(prevMessages => [ ...prevMessages, data ]) 
@@ -235,7 +243,7 @@ function Project() {
 }, [project._id]);
 
 
-useEffect(() => {
+    useEffect(() => {
     return () => {
         disconnectSocket();
     };
@@ -264,7 +272,7 @@ useEffect(() => {
 
     
       return (
-    <main className='h-screen w-screen flex'>
+    <main className='h-screen overflow-hidden w-screen flex'>
 
         {/* Left Section - Chat Messages */}
         <section className='left flex flex-col h-full w-3/5 bg-gray-200'>
@@ -382,7 +390,28 @@ useEffect(() => {
 
         </section>
 
-        <section className='right bg-silver-50 w-3/5 h-full flex flex-col'>
+        <section className='right bg-silver-50 w-3/5 h-full flex flex-col p-4'>
+
+        <div className='flex justify-between w-full'>
+
+            <button
+  onClick={() => setShowCompiler(true)}
+   className=" cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
+
+>
+  Home
+</button>
+
+
+        <button
+  onClick={() => setShowCompiler(true)}
+   className="ml-auto cursor-pointer px-4 py-2 hover:bg-gray-100 hover:text-black font-semibold rounded-md shadow-sm hover:scale-105 bg-gray-900 transition-all duration-500 text-white"
+
+>
+  Open Compiler
+</button>
+</div>
+
             <div className='flex-grow overflow-y-auto p-3'>
                 {getAllCodeBlocks().map((block, index) => (
                     <div key={index} className='mb-4 last:mb-0'>
@@ -399,7 +428,80 @@ useEffect(() => {
                     </div>
                 ))}
             </div>
+
+
+
+            <section className='right bg-silver-50  h-full flex flex-row'>
+
+{/*   
+  <div className='w-1/2 p-3 border-r border-slate-300 flex flex-col'>
+    <h2 className='text-md font-semibold mb-2'>Chatgineer-Mini Compiler</h2>
+
+    <select
+      value={language}
+      onChange={(e) => setLanguage(e.target.value)}
+      className='p-2 mb-2 border rounded-md'
+    >
+      <option value="python3">Python 3</option>
+      <option value="java">Java</option>
+      <option value="cpp17">C++17</option>
+      <option value="c">C</option>
+    </select>
+
+    <textarea
+      className='flex-grow p-2 border rounded-md resize-none'
+      rows={10}
+      value={code}
+      onChange={(e) => setCode(e.target.value)}
+      placeholder='Write your code here...'
+    />
+
+    <textarea
+        className="w-full p-2 border rounded-md resize-none mb-4"
+        rows={3}
+        value={stdin}
+        onChange={(e) => setStdin(e.target.value)}
+        placeholder="Enter input (stdin) here..."
+      />
+
+    <button
+      onClick={() => runCode(stdin)}
+      className='mt-2 p-2 bg-black text-white rounded-md hover:bg-gray-800'
+      disabled={loading}
+    >
+      {loading ? "Running..." : "Run Code"}
+    </button>
+
+    <div className='mt-4'>
+      <h3 className='text-sm font-semibold mb-1'>Output:</h3>
+      <pre className='bg-gray-100 p-2 rounded-md text-sm whitespace-pre-wrap'>
+        {output}
+      </pre>
+    </div>
+  </div> */}
+
+  {/* 🔸 Code Output Section */}
+  <div className='w-full p-3 overflow-y-auto'>
+    {getAllCodeBlocks().map((block, index) => (
+      <div key={index} className='mb-4 last:mb-0'>
+        <div className='text-xs text-silver-600 mb-2'>{block.language}</div>
+        <div className='bg-white rounded-sm p-3 border border-silver-600'>
+          <pre className={`language-${block.language}`}>
+            <code className={`language-${block.language}`}>{block.code}</code>
+          </pre>
+        </div>
+      </div>
+    ))}
+  </div>
+
+</section>
+
         </section>
+
+
+
+        {showCompiler && <Compiler setShowCompiler={setShowCompiler} />}
+
 
         {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

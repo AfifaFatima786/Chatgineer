@@ -6,6 +6,10 @@ const dotenv=require('dotenv')
 dotenv.config()
 const socketIo=require('socket.io')
 const { raw } = require('express')
+const axios = require('axios');
+
+
+
 
 const port=process.env.PORT || 3000;
 const jwt=require('jsonwebtoken')
@@ -115,6 +119,30 @@ io.on('connection', socket => {
 
    });
 });
+
+
+app.post('/execute', async (req, res) => {
+  const { script, language, versionIndex,stdin } = req.body;
+
+  console.log(process.env.JDOODLE_CLIENT_ID)
+
+  try {
+    const result = await axios.post('https://api.jdoodle.com/v1/execute', {
+      clientId: process.env.JDOODLE_CLIENT_ID,
+      clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+      script,
+      language,
+      versionIndex,
+      stdin
+    });
+
+    res.json(result.data);
+  } catch (err) {
+    console.error('JDoodle API error:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Code execution failed' });
+  }
+});
+
 
 
 
