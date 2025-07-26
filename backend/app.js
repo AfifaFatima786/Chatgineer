@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const cors = require('cors'); 
 const cookieParser = require('cookie-parser');
-
+//const morgan = require('morgan');
 dotenv.config();
 
 
@@ -18,7 +18,7 @@ const aiRoutes=require('./routes/aiRoutes')
 
 const app = express();
 
-
+app.use(morgan('dev'));
 app.use(cors({
     origin: 'http://localhost:5173', 
     credentials: true, 
