@@ -19,23 +19,23 @@ function Compiler(props) {
         c: "5"
       };
     
-    //   const runCode = async (currentStdin) => {
-    //     setLoading(true);
-    //     try {
-    //       const res = await axios.post('http://localhost:3000/execute', {
-    //         script: code,
-    //         language: language,
-    //         versionIndex: versionIndexMap[language],
-    //         stdin: currentStdin,
+      const runCode = async (currentStdin) => {
+        setLoading(true);
+        try {
+          const res = await axios.post('http://localhost:3000/execute', {
+            script: code,
+            language: language,
+            versionIndex: versionIndexMap[language],
+            stdin: currentStdin,
             
-    //       });
-    //       setOutput(res.data.output);
-    //     } catch (err) {
-    //       setOutput("Error executing code.");
-    //       console.error(err);
-    //     }
-    //     setLoading(false);
-    //   };
+          });
+          setOutput(res.data.output);
+        } catch (err) {
+          setOutput("Error executing code.");
+          console.error(err);
+        }
+        setLoading(false);
+      };
 
 
 
@@ -89,7 +89,7 @@ function Compiler(props) {
         
 
         <button
-         // onClick={runCode(stdin)}
+         onClick={()=>runCode(stdin)}
           className='p-2 bg-black hover:scale-105 transition-all duration-500 cursor-pointer hover:bg-gray-200 text-white rounded-md hover:text-black'
           disabled={loading}
         >
