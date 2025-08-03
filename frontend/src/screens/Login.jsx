@@ -4,6 +4,7 @@ import axios from '../config/axios'
 import { useState } from 'react'
 import { UserContext } from '../context/userContext'
 import { useContext } from 'react'
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -30,12 +31,13 @@ const Login = () => {
 
         localStorage.setItem('token',res.data.token)
         setUser(res.data.user)
+         toast.success("You have successfully logged in!");
+
         navigate('/');
         })
     .catch((err) => {
         if (err.response) {
-            // Server responded with error status
-            console.log(err.response.data);
+             toast.success("Invalid Email or Password");
         } else if (err.request) {
             // Request was made but no response received (server not running)
             console.log('Server is not running. Please start the backend server.');

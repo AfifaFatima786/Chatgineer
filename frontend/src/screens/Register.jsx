@@ -2,6 +2,8 @@ import { useState,useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from '../config/axios'
 import { UserContext } from '../context/userContext'
+import { toast } from 'react-toastify';
+
 
 const Register = () => {
     const navigate=useNavigate()
@@ -25,12 +27,14 @@ const Register = () => {
 
         localStorage.setItem('token',res.data.token)
         setUser(res.data.user)
+        toast.success("You have successfully registered!");
+
         navigate('/');
         })
     .catch((err) => {
         if (err.response) {
-            // Server responded with error status
-            console.log(err.response.data);
+            toast.success("Something went wrong!");
+            
         } else if (err.request) {
             // Request was made but no response received (server not running)
             console.log('Server is not running. Please start the backend server.');

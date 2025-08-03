@@ -4,6 +4,8 @@ import { RiLink } from "react-icons/ri";
 import axios from '../config/axios'
 import { FaUser } from "react-icons/fa";
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 import {useNavigate} from "react-router-dom"
 
@@ -26,7 +28,9 @@ function Home() {
     }).then((res)=>{
       console.log(res)
       setIsModalOpen(false)
-      //setProject(prev => [...prev, res.data.project]);
+      toast.success("New Project created!");
+                  
+      
       axios.get('/projects/all', { withCredentials: true })
       .then(res => setProject(res.data.projects))
       .catch(err => console.log(err))
