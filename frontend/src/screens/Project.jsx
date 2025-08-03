@@ -13,6 +13,10 @@ import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
 import 'highlight.js/styles/nord.css'; 
 import Compiler from './Compiler';
+import { toast } from 'react-toastify';
+
+//import { toast } from 'react-toastify'
+
 
 import { Link } from 'react-router-dom';
 
@@ -96,7 +100,14 @@ function Project() {
         ).then(res=>{
             console.log(res.data)
             setIsModalOpen(false)
-        }).catch(err=>{
+            toast.success("Collaborator added");
+            return axios.get(`/projects/get-project/${location.state.project._id}`, {
+      withCredentials: true
+    });
+        }).then(res => {
+    // ✅ Step 3: Update state with new project users
+    setProject(res.data.project);
+  }).catch(err=>{
             if (err.response) {
                 console.log(err.response.data);
             } else if (err.request) {

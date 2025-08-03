@@ -26,6 +26,10 @@ function Home() {
     }).then((res)=>{
       console.log(res)
       setIsModalOpen(false)
+      //setProject(prev => [...prev, res.data.project]);
+      axios.get('/projects/all', { withCredentials: true })
+      .then(res => setProject(res.data.projects))
+      .catch(err => console.log(err))
 
     }).catch((error)=>{
       console.log(error)

@@ -7,6 +7,10 @@ import Project from '../screens/Project'
 import UserAuth from '../auth/UserAuth'
 import Logout from '../screens/Logout'
 
+import { ToastContainer, toast } from 'react-toastify';
+  
+
+
 
 function AppRoutes() {
   return (
@@ -24,6 +28,9 @@ function AppRoutes() {
 
 
     </Routes>
+    <ToastContainer />
+ 
+     
     </BrowserRouter>
   )
 }
