@@ -37,7 +37,7 @@ const Login = () => {
         })
     .catch((err) => {
         if (err.response) {
-             toast.success("Invalid Email or Password");
+             toast.error("Invalid Email or Password");
         } else if (err.request) {
             // Request was made but no response received (server not running)
             console.log('Server is not running. Please start the backend server.');

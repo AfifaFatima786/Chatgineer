@@ -33,7 +33,7 @@ const Register = () => {
         })
     .catch((err) => {
         if (err.response) {
-            toast.success("Something went wrong!");
+            toast.error("Something went wrong!");
             
         } else if (err.request) {
             // Request was made but no response received (server not running)
