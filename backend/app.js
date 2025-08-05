@@ -18,11 +18,21 @@ const aiRoutes=require('./routes/aiRoutes')
 
 const app = express();
 
-app.use(morgan('dev'));
 app.use(cors({
-    origin: 'https://chatgineer.vercel.app', 
+    origin:[ 'https://chatgineer.vercel.app',"https://chatgineer-afifa-fatimas-projects.vercel.app" ],
     credentials: true, 
 }));
+
+
+
+app.options('*', cors({
+  origin: 'https://chatgineer.vercel.app',
+  credentials: true
+}));
+
+
+
+// app.use(morgan('dev'));
 
 app.use(cookieParser());
 app.use(morgan('dev'));
