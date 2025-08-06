@@ -23,7 +23,9 @@ const aiServices =require('./services/aiServices')
 
 io=socketIo(server,{
         cors:{
-            origin:['http://localhost:5173','http://localhost:3000'],
+            // origin:['http://localhost:5173','http://localhost:3000'],
+            origin:[ 'https://chatgineer.vercel.app',"https://chatgineer-afifa-fatimas-projects.vercel.app" ],
+   
             methods:['GET','POST'],
             credentials: true
         }
