@@ -25,10 +25,10 @@ app.use(cors({
 
 
 
-app.options('*', cors({
-  origin: 'https://chatgineer.vercel.app',
-  credentials: true
-}));
+// app.options('*', cors({
+//   origin: 'https://chatgineer.vercel.app',
+//   credentials: true
+// }));
 
 
 
