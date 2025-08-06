@@ -56,7 +56,6 @@ function Project() {
 //   const runCode = async (currentStdin) => {
 //     setLoading(true);
 //     try {
-//       const res = await axios.post('http://localhost:3000/execute', {
 //         script: code,
 //         language: language,
 //         versionIndex: versionIndexMap[language],
