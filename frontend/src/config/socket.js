@@ -14,7 +14,7 @@ export const initialiseSocket = (projectId) => {
   }
   
   // Create new socket instance
-  socketInstance = io(import.meta.env.VITE_API_URL, {
+  socketInstance = io(import.meta.env.VITE_API_PATH, {
     withCredentials: true,
     query: {
       projectId
