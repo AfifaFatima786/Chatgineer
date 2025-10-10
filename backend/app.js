@@ -19,7 +19,7 @@ const aiRoutes=require('./routes/aiRoutes')
 const app = express();
 
 app.use(cors({
-    origin:[ 'https://chatgineer.vercel.app',"https://chatgineer-afifa-fatimas-projects.vercel.app" ],
+    origin:"*",
     credentials: true, 
 }));
 
