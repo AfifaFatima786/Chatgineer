@@ -21,9 +21,16 @@ const projectModel=require('./models/projectModel')
 const aiServices =require('./services/aiServices')
 
 
+const allowedOrigins = [
+  'http://localhost:5173', 
+  'http://13.62.105.209:31000', 
+  'https://chatgineer.vercel.app'
+];
+
+
 io=socketIo(server,{
         cors:{
-            origin: "*" ,
+            origin: allowedOrigins ,
    
             methods:['GET','POST'],
             credentials: true
@@ -150,4 +157,5 @@ app.post('/execute', async (req, res) => {
 
 server.listen(port,()=>{
     console.log(`Server is running on port ${port}`)
+
 })
