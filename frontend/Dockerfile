@@ -36,25 +36,52 @@
 
 
 
-# ------------------- Frontend Stage (Option A) ------------------------------
+# # ------------------- Frontend Stage (Option A) ------------------------------
+# FROM node:21
+
+# # Set working directory
+# WORKDIR /app
+
+# # Copy package.json and package-lock.json for dependency installation
+# COPY package*.json ./
+
+# # Install dependencies inside this image
+# RUN npm install
+
+# # Copy the rest of the application code
+# COPY . .
+
+# # Copy the .env.docker file to .env.local
+# COPY .env.docker .env.local
+
+# # Expose port for Vite dev server
+# EXPOSE 5173
+
+# # Run Vite dev server
+# CMD ["npx", "vite", "--host", "0.0.0.0"]
+
+
+
 FROM node:21
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json for dependency installation
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies inside this image
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Ensure binaries are executable
+RUN chmod -R 755 node_modules/.bin
+
+# Copy rest of the code
 COPY . .
 
-# Copy the .env.docker file to .env.local
+# Copy env
 COPY .env.docker .env.local
 
-# Expose port for Vite dev server
+# Expose port
 EXPOSE 5173
 
 # Run Vite dev server
