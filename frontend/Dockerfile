@@ -102,6 +102,8 @@ RUN npm install
 # Ensure binaries are executable
 RUN chmod -R 755 node_modules/.bin
 
+RUN chmod +x node_modules/vite/bin/vite.js
+
 # Debug: List installed node_modules and check vite
 RUN echo "===== Checking node_modules =====" \
  && ls -l node_modules \
@@ -120,6 +122,7 @@ COPY .env.docker .env.local
 EXPOSE 5173
 
 # Run Vite dev server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["node", "node_modules/vite/bin/vite.js", "--host", "0.0.0.0"]
+
 
 
