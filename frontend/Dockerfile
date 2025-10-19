@@ -62,6 +62,33 @@
 
 
 
+# FROM node:21
+
+# WORKDIR /app
+
+# # Copy package files
+# COPY package*.json ./
+
+# # Install dependencies
+# RUN npm install
+
+# # Ensure binaries are executable
+# RUN chmod -R 755 node_modules/.bin
+
+# # Copy rest of the code
+# COPY . .
+
+# # Copy env
+# COPY .env.docker .env.local
+
+# # Expose port
+# EXPOSE 5173
+
+# # Run Vite dev server
+# CMD ["npx", "vite", "--host", "0.0.0.0"]
+
+
+
 FROM node:21
 
 WORKDIR /app
@@ -75,6 +102,14 @@ RUN npm install
 # Ensure binaries are executable
 RUN chmod -R 755 node_modules/.bin
 
+# Debug: List installed node_modules and check vite
+RUN echo "===== Checking node_modules =====" \
+ && ls -l node_modules \
+ && echo "===== Checking .bin =====" \
+ && ls -l node_modules/.bin \
+ && echo "===== Checking vite binary =====" \
+ && ls -l node_modules/.bin/vite
+
 # Copy rest of the code
 COPY . .
 
@@ -86,3 +121,4 @@ EXPOSE 5173
 
 # Run Vite dev server
 CMD ["npx", "vite", "--host", "0.0.0.0"]
+
