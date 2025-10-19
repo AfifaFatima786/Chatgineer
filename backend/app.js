@@ -19,9 +19,10 @@ const aiRoutes=require('./routes/aiRoutes')
 const app = express();
 
 app.use(cors({
-    origin:"*",
-    credentials: true, 
+  origin: ['http://localhost:5173', 'http://13.62.105.209:31000', 'https://chatgineer.vercel.app'],
+  credentials: true
 }));
+
 
 
 
@@ -48,3 +49,4 @@ app.get('/', (req, res) => {
 });
 
 module.exports = app;
+
