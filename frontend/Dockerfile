@@ -10,6 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+RUN chmod +x node_modules/.bin/vite
+
+
 # Copy the rest of the application code
 COPY . .
 
