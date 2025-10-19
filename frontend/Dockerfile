@@ -120,5 +120,6 @@ COPY .env.docker .env.local
 EXPOSE 5173
 
 # Run Vite dev server
-CMD ["npx", "vite", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
 
